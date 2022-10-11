@@ -47,8 +47,18 @@ namespace Blog.Controllers
             {
                 return NotFound();
             }
+            blogModel = new BlogModel()
+            {
+                Id = blogModel.Id,
+                Title = blogModel.Title,
+                Description = blogModel.Description,
+                ImageName = blogModel.ImageName,
+                ImageSrc  = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, blogModel.ImageName)
+            };
 
             return blogModel;
+
+           
         }
 
         // PUT: api/Blogs/5
@@ -94,13 +104,15 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<ActionResult<BlogModel>> PostBlogModel([FromForm] BlogModel blogModel)
         {
-          
-            blogModel.ImageName = await SaveImage(blogModel.ImageFile);
+            if(blogModel.ImageFile != null) {
+                blogModel.ImageName = await SaveImage(blogModel.ImageFile);
+            }
+           
          
             _context.Blogs.Add(blogModel);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBlogModel", new { id = blogModel.Id }, blogModel);
+            return StatusCode(201);
         }
 
         // DELETE: api/Blogs/5
