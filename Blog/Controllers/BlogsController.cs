@@ -26,7 +26,15 @@ namespace Blog.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BlogModel>>> GetBlogs()
         {
-            return await _context.Blogs.ToListAsync();
+            return await _context.Blogs
+                .Select(x => new BlogModel() { 
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    ImageName = x.ImageName,
+                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme,Request.Host, Request.PathBase, x.ImageName)
+                }).ToListAsync();
+
         }
 
         // GET: api/Blogs/5
@@ -46,12 +54,19 @@ namespace Blog.Controllers
         // PUT: api/Blogs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBlogModel(int id, BlogModel blogModel)
+        public async Task<IActionResult> PutBlogModel(int id,[FromForm] BlogModel blogModel)
         {
             if (id != blogModel.Id)
             {
                 return BadRequest();
             }
+
+            if(blogModel.ImageFile != null) //Insert new image 
+            {
+                DeleteImage(blogModel.ImageName);
+                blogModel.ImageName = await SaveImage(blogModel.ImageFile);
+            }
+            
 
             _context.Entry(blogModel).State = EntityState.Modified;
 
@@ -79,7 +94,9 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<ActionResult<BlogModel>> PostBlogModel([FromForm] BlogModel blogModel)
         {
+          
             blogModel.ImageName = await SaveImage(blogModel.ImageFile);
+         
             _context.Blogs.Add(blogModel);
             await _context.SaveChangesAsync();
 
@@ -96,6 +113,7 @@ namespace Blog.Controllers
                 return NotFound();
             }
 
+            DeleteImage(blogModel.ImageName);
             _context.Blogs.Remove(blogModel);
             await _context.SaveChangesAsync();
 
@@ -118,6 +136,14 @@ namespace Blog.Controllers
                 await imageFile.CopyToAsync(fileStream);
             }
             return imageName;
+        }
+
+        [NonAction]
+        public void DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if(System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
         }
     }
 }
