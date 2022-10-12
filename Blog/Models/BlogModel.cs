@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blog.Models
 {
-    public class BlogModel
+    public class BlogModel: BaseEntity
     {
         [Key]
         public int Id { get; set; }
