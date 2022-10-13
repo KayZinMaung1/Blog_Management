@@ -1,4 +1,5 @@
 ﻿using Blog.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -9,7 +10,9 @@ namespace Blog.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private UserModel GetCurrentUser()
+        [HttpGet("CurrentUser")]
+        [Authorize]
+        public UserModel GetCurrentUser()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 

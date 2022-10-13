@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Blog.Models;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.Controllers
 {
@@ -25,6 +25,7 @@ namespace Blog.Controllers
 
         // GET: api/Blogs
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<BlogModel>>> GetBlogs()
         {
             return await _context.Blogs
@@ -42,6 +43,7 @@ namespace Blog.Controllers
 
         // GET: api/Blogs/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<BlogModel>> GetBlogModel(int id)
         {
             var blogModel = await _context.Blogs.FindAsync(id);
@@ -69,6 +71,7 @@ namespace Blog.Controllers
         // PUT: api/Blogs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutBlogModel(int id, [FromForm] BlogModel blogModel)
         {
             if (id != blogModel.Id)
@@ -107,6 +110,7 @@ namespace Blog.Controllers
         // POST: api/Blogs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<BlogModel>> PostBlogModel([FromForm] BlogModel blogModel)
         {
             if (blogModel.ImageFile != null) {
@@ -122,6 +126,7 @@ namespace Blog.Controllers
 
         // DELETE: api/Blogs/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteBlogModel(int id)
         {
             var blogModel = await _context.Blogs.FindAsync(id);
