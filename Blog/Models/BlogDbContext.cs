@@ -23,6 +23,7 @@ namespace Blog.Models
                 {
                     ((BaseEntity)entityEntry.Entity).CreatedDate = DateTime.Now;
                 }
+               
             }
 
             return base.SaveChangesAsync(cancellationToken);

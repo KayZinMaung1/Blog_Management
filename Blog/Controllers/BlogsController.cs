@@ -26,9 +26,10 @@ namespace Blog.Controllers
         // GET: api/Blogs
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<BlogModel>>> GetBlogs()
+        public async Task<ActionResult<PagedListServer<BlogModel>>> GetBlogsWithPagination([FromQuery] Paginator filter)
         {
-            return await _context.Blogs
+            var paginator = new Paginator(filter.per_page, filter.current_page);
+            IEnumerable<BlogModel> result = await _context.Blogs
                 .Select(x => new BlogModel() {
                     Id = x.Id,
                     Title = x.Title,
@@ -38,6 +39,17 @@ namespace Blog.Controllers
                     CreatedDate = x.CreatedDate,
                     UpdatedDate = x.UpdatedDate
                 }).ToListAsync();
+
+            //paging
+            var totalCount = result.Count();
+            var totalPages = (int)Math.Ceiling((double)totalCount / (double)paginator.per_page);
+            var dataList = result.Skip(paginator.per_page * (paginator.current_page - 1)).Take(paginator.per_page); //Page is dynamic
+            PagedListServer<BlogModel> blogList = new PagedListServer<BlogModel>();
+            blogList.Results = dataList.ToList();
+            blogList.TotalCount = totalCount;
+            blogList.TotalPages = totalPages;
+
+            return blogList;
 
         }
 
