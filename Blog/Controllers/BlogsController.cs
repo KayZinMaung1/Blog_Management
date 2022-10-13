@@ -135,7 +135,10 @@ namespace Blog.Controllers
                 return NotFound();
             }
 
-            DeleteImage(blogModel.ImageName);
+            if (blogModel.ImageFile != null) 
+            {
+                DeleteImage(blogModel.ImageName);
+            }
             _context.Blogs.Remove(blogModel);
             await _context.SaveChangesAsync();
 
@@ -163,6 +166,7 @@ namespace Blog.Controllers
         [NonAction]
         public void DeleteImage(string imageName)
         {
+
             var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
             if (System.IO.File.Exists(imagePath))
                 System.IO.File.Delete(imagePath);
