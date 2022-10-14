@@ -138,6 +138,7 @@ namespace Blog.Controllers
             return StatusCode(201);
         }
 
+
         // DELETE: api/Blogs/5
         [HttpDelete("{id}")]
         [Authorize]
@@ -149,7 +150,7 @@ namespace Blog.Controllers
                 return NotFound();
             }
 
-            if (blogModel.ImageFile != null) 
+            if (blogModel.ImageName != null)
             {
                 DeleteImage(blogModel.ImageName);
             }
@@ -157,7 +158,9 @@ namespace Blog.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+
         }
+
 
         private bool BlogModelExists(int id)
         {
@@ -185,8 +188,6 @@ namespace Blog.Controllers
             if (System.IO.File.Exists(imagePath))
                 System.IO.File.Delete(imagePath);
         }
-
-        
 
     }
 }
